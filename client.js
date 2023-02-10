@@ -16,9 +16,9 @@ stream.on('data', function (data) {
 })
 
 function connect (pipe) {
-  const socket = net.connect({ path: pipe })
-
+  let socket = process.platform === 'win32' ? null : net.connect({ path: pipe })
   let offset = 0
+
   const fd = socket._handle.fd
   const buf = Buffer.allocUnsafe(128 * 1024)
 
@@ -29,6 +29,7 @@ function connect (pipe) {
   readSync(len)
 
   const bootstrap = buf.subarray(4, 4 + len).toString()
+  if (!socket) socket = new net.Socket({ fd })
 
   return { socket, bootstrap }
 
