@@ -40,7 +40,7 @@ function tryConnect (pipe, userAgent) {
   let offset = 0
   let buf = Buffer.allocUnsafe(128 * 1024)
 
-  const fd = socket ? socket._handle.fd : fs.openSync(pipe)
+  const fd = socket ? socket._handle.fd : fs.openSync(pipe, 'w+')
 
   const userAgentBuffer = Buffer.from(userAgent)
   const frameSize = 1 + userAgentBuffer.byteLength
