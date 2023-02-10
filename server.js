@@ -6,10 +6,14 @@ const server = net.createServer(function (socket) {
 
   console.log('new socket, who dis')
 
-  setTimeout(function () {
-    stream.write('hello world')
-    stream.write('another one!')
-  }, 1000)
+  stream.once('data', function (data) {
+    console.log('client said', data)
+
+    setTimeout(function () {
+      stream.write('hello world')
+      stream.write('another one!')
+    }, 1000)
+  })
 })
 
 if (process.platform === 'win32') {
