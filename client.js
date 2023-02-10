@@ -86,8 +86,7 @@ function tryConnect (pipe, userAgent) {
           continue
         }
 
-        socket.destroy()
-        socket.on('error', noop)
+        closeSync()
 
         throw err
       }
@@ -106,11 +105,21 @@ function tryConnect (pipe, userAgent) {
           continue
         }
 
-        socket.destroy()
-        socket.on('error', noop)
+        closeSync()
 
         throw err
       }
+    }
+  }
+
+  function closeSync () {
+    if (socket) {
+      socket.destroy()
+      socket.on('error', noop)
+    } else {
+      try {
+        fs.closeSync(fd)
+      } catch {}
     }
   }
 
