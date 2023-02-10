@@ -19,7 +19,7 @@ function connect (pipe) {
   let socket = process.platform === 'win32' ? null : net.connect({ path: pipe })
   let offset = 0
 
-  const fd = socket._handle.fd
+  const fd = socket ? socket._handle.fd : fs.openSync(pipe)
   const buf = Buffer.allocUnsafe(128 * 1024)
 
   readSync(4)
