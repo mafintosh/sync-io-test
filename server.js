@@ -12,6 +12,10 @@ const server = net.createServer(function (socket) {
   }, 1000)
 })
 
-require('fs').unlink('server.sock', function () {
-  server.listen('server.sock')
-})
+if (process.platform === 'win32') {
+  server.listen('\\\\.\\pipe\\server')
+} else {
+  require('fs').unlink('server.sock', function () {
+    server.listen('server.sock')
+  })
+}

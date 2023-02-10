@@ -4,8 +4,9 @@ const FramedStream = require('framed-stream')
 
 const zzz = new Int32Array(new SharedArrayBuffer(4))
 const sleep = (ms) => Atomics.wait(zzz, 0, 0, ms)
+const pipe = process.platform === 'win32' ? '\\\\.\\pipe\\server' : './server.sock'
 
-const { socket, bootstrap } = connect('./server.sock')
+const { socket, bootstrap } = connect(pipe)
 const stream = new FramedStream(socket)
 
 console.log('bootstrap:', bootstrap)
