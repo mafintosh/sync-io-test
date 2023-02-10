@@ -10,6 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "compact-encoding": "^2.11.0",
     "framed-stream": "^1.0.1"
   }
 }

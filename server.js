@@ -1,5 +1,6 @@
 const net = require('net')
 const FramedSocket = require('framed-stream')
+const c = require('compact-encoding')
 
 const server = net.createServer(function (socket) {
   const stream = new FramedSocket(socket)
@@ -7,10 +8,12 @@ const server = net.createServer(function (socket) {
   console.log('new socket, who dis')
 
   stream.once('data', function (data) {
-    console.log('client said', data)
+    console.log('client said', c.decode(c.string, data))
 
     setTimeout(function () {
-      stream.write('hello world')
+      const buf = c.encode(c.string, 'the handshake code')
+
+      stream.write(buf)
       stream.write('another one!')
     }, 1000)
   })

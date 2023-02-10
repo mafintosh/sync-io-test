@@ -7,9 +7,11 @@ const sleep = (ms) => Atomics.wait(zzz, 0, 0, ms)
 const pipe = process.platform === 'win32' ? '\\\\.\\pipe\\server' : './server.sock'
 
 const { socket, bootstrap } = connect(pipe, 'test-ua')
-const stream = new FramedStream(socket)
 
 console.log('bootstrap:', bootstrap)
+
+// obvs the framed stream should come from the bootstrap code, just for testing
+const stream = new FramedStream(socket)
 
 stream.on('data', function (data) {
   console.log('data:', data.toString())
@@ -64,7 +66,7 @@ function tryConnect (pipe, userAgent) {
 
   readSync(len)
 
-  const bootstrap = buf.subarray(4, 4 + len).toString()
+  const bootstrap = readString(4)
   if (!socket) socket = new net.Socket({ fd })
 
   return { socket, bootstrap }
@@ -110,6 +112,17 @@ function tryConnect (pipe, userAgent) {
         throw err
       }
     }
+  }
+
+  function readString (offset) {
+    const byte = buf[offset++]
+    let len = byte
+
+    if (byte === 0xfd) len = buf[offset++] + buf[offset++] * 0x100
+    if (byte === 0xfe) len = buf[offset++] + buf[offset++] * 0x100 + buf[offset++] * 0x10000 + buf[offset++] * 0x1000000
+    if (byte === 0xff) throw new Error('String length should be < 64bit')
+
+    return buf.subarray(offset, offset += len).toString()
   }
 
   function noop () {}
